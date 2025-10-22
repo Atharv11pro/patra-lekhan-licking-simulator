@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patra Lekhan Licking Simulator</title>
+<style>
+body {
+  font-family: "Courier New", monospace;
+  background: #f9f4ef; /* classy soft background */
+  color: #333;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+h1 {
+  margin-top: 20px;
+  color: #6b3e26;
+  text-shadow: 1px 1px 2px #ccc;
+}
+#letterBox {
+  margin: 20px auto;
+  width: 90%;
+  max-width: 600px;
+  height: 200px;
+  background: #fff8f0;
+  border: 2px solid #d2b48c;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: left;
+  overflow-y: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  color: #333;
+}
+textarea {
+  width: 80%;
+  height: 100px;
+  margin-top: 10px;
+  font-family: monospace;
+  font-size: 1em;
+  border-radius: 10px;
+  border: 2px solid #d2b48c;
+  background: #fff8f0;
+  color: #333;
+  padding: 10px;
+}
+button {
+  background: #6b3e26;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 1em;
+  margin: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+button:hover {
+  background: #8b5a2b;
+}
+#stats {
+  font-size: 1.2em;
+  margin-top: 10px;
+}
+#botName {
+  font-weight: bold;
+  color: #6b3e26;
+}
+footer {
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: #555;
+}
+</style>
+</head>
+<body>
+
+<h1>Patra Lekhan Licking Simulator</h1>
+<div id="letterBox"><p><em>Type your letter below...</em></p></div>
+<textarea id="letterInput" placeholder="Write your letter here..."></textarea>
+<br>
+<button id="sealBtn">📜 Seal Letter</button>
+<button id="lickBtn">😛 Lick Letter</button>
+
+<div id="stats">
+Points: <span id="points">0</span> | Bot: <span id="botName">Bot</span>
+</div>
+<footer>Made by Atharv & Arjun 💌</footer>
+
+<audio id="penSound" src="https://www.soundjay.com/mechanical/pen-scratch-1.mp3"></audio>
+<audio id="sealSound" src="https://www.soundjay.com/button/button-16.mp3"></audio>
+<audio id="lickSound" src="https://www.soundjay.com/button/button-10.mp3"></audio>
+
+<script>
+let points = 0;
+
+const letterBox = document.getElementById("letterBox");
+const pointsDisplay = document.getElementById("points");
+const sealBtn = document.getElementById("sealBtn");
+const lickBtn = document.getElementById("lickBtn");
+const letterInput = document.getElementById("letterInput");
+
+const penSound = document.getElementById("penSound");
+const sealSound = document.getElementById("sealSound");
+const lickSound = document.getElementById("lickSound");
+
+function updateStats() {
+  pointsDisplay.textContent = points;
+}
+
+function judgeLetter(text) {
+  let length = text.trim().length;
+  let basePoints = 0;
+  let msg = "";
+
+  if (length < 20) { basePoints = 0; msg = "Bot frowns: too short!"; }
+  else if (length < 50) { basePoints = 10; msg = "Bot nods at your effort."; }
+  else if (length >= 50 && length < 100) { basePoints = 20; msg = "Well-written! Bot approves."; }
+  else if (length >= 100) { basePoints = 30; msg = "Excellent! Bot is impressed!"; }
+  else { basePoints = 5; msg = "Mysterious... Bot hesitates."; }
+
+  return { msg: msg, pts: basePoints };
+}
+
+sealBtn.addEventListener("click", () => {
+  let text = letterInput.value;
+  if (text.trim() === "") { alert("You need to write a letter first!"); return; }
+
+  penSound.play();
+  let judgment = judgeLetter(text);
+  points += judgment.pts;
+
+  let p = document.createElement("p");
+  p.innerHTML = `<strong>You sealed a letter:</strong> "${text}"<br>${judgment.msg} (+${judgment.pts} pts)`;
+  letterBox.appendChild(p);
+  letterInput.value = "";
+  updateStats();
+  letterBox.scrollTop = letterBox.scrollHeight;
+
+  setTimeout(() => sealSound.play(), 300);
+});
+
+let lickClicks = 0;
+let lickTimer = null;
+
+lickBtn.addEventListener("click", () => {
+  let text = letterInput.value;
+  if (text.trim() === "") { alert("You need to write a letter first!"); return; }
+
+  lickSound.play();
+  lickClicks++;
+
+  if (!lickTimer) {
+    lickTimer = setTimeout(() => {
+      let cpsPoints = lickClicks * 5;
+      points += cpsPoints;
+
+      let p = document.createElement("p");
+      p.innerHTML = `😛 You licked the letter ${lickClicks} times! +${cpsPoints} pts`;
+      letterBox.appendChild(p);
+      updateStats();
+      letterBox.scrollTop = letterBox.scrollHeight;
+
+      lickClicks = 0;
+      lickTimer = null;
+    }, 1000);
+  }
+});
+</script>
+
+</body>
+</html>
